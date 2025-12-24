@@ -85,6 +85,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, "pinview: stdout is not a terminal")
 		os.Exit(1)
 	}
+	if flag.NArg() == 0 && term.IsTTY(os.Stdin) {
+		fmt.Fprintln(os.Stderr, "pinview: no input file and stdin is a terminal")
+		os.Exit(1)
+	}
+	if flag.NArg() > 1 {
+		fmt.Fprintln(os.Stderr, "pinview: too many arguments")
+		os.Exit(1)
+	}
 
 	err := _main(*headerLines, showRuler)
 	if err != nil {

@@ -11,7 +11,11 @@ import (
 // IsInteractive は stdout が端末かどうかを返す。
 // パイプやリダイレクト時は false になる。
 func IsInteractive() bool {
-	return term.IsTerminal(int(os.Stdout.Fd()))
+	return IsTTY(os.Stdout)
+}
+
+func IsTTY(f *os.File) bool {
+	return term.IsTerminal(int(f.Fd()))
 }
 
 // GetHeight は現在の端末の高さを取得する。
