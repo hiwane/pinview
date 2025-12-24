@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/hiwane/pinview/internal/pager"
 )
 
 func main() {
@@ -42,7 +44,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	pager, err := New(lines, *headerLines)
+	pager, err := pager.New(lines, *headerLines)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
