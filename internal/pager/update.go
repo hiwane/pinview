@@ -25,14 +25,28 @@ func (m *Model) Update(key byte) bool {
 		m.Offset++
 	case 'k':
 		m.Offset--
+	case 'h':
+		m.SetHeader(m.header - 1)
+	case 'H':
+		m.SetHeader(m.header + 1)
+	case 'f':
+		m.SetFooter(m.footer - 1)
+	case 'F':
+		m.SetFooter(m.footer + 1)
+	case '+':
+		m.Height++
+	case '-':
+		m.Height--
 	case 'g':
 		m.Offset = 0
 	case 'G':
 		m.Offset = maxOffset
 	case ' ', 0x4:
-		m.Offset += m.Height - m.Pin - 1
+		m.Offset += m.bodyHeight()
 	case 0x15:
-		m.Offset -= m.Height - m.Pin - 1
+		m.Offset -= m.bodyHeight()
+	case 'r':
+		m.Ruler = !m.Ruler
 	}
 
 	if m.Offset < 0 {
@@ -45,7 +59,7 @@ func (m *Model) Update(key byte) bool {
 }
 
 func (m *Model) maxScroll() int {
-	maxScroll := len(m.Lines) - (m.Height - m.Pin - 1)
+	maxScroll := len(m.Lines) - (m.Height - m.header - m.footer - 1)
 	if maxScroll < 0 {
 		maxScroll = 0
 	}

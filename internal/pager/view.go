@@ -19,17 +19,21 @@ func (m *Model) View() []string {
 
 	out := make([]string, 0, m.Height)
 
-	// ヘッダ部
-	for i := 0; i < m.Pin; i++ {
-		out = append(out, m.Lines[i])
-	}
-
-	if m.Pin > 0 {
+	/////////////////////////////
+	// ヘッダー部
+	/////////////////////////////
+	if m.header > 0 {
+		for i := 0; i < m.header; i++ {
+			out = append(out, m.Lines[i])
+		}
 		out = append(out, m.Separator())
 	}
 
-	start := m.Pin + m.Offset
-	end := start + (m.Height - m.Pin - 1)
+	/////////////////////////////
+	// 本文
+	/////////////////////////////
+	start := m.header + m.Offset
+	end := start + m.bodyHeight()
 	if m.Ruler {
 		end -= 1
 	}
@@ -41,9 +45,22 @@ func (m *Model) View() []string {
 		out = append(out, m.Lines[i])
 	}
 
+	/////////////////////////////
+	// フッター部
+	/////////////////////////////
+	if m.footer > 0 {
+		out = append(out, m.Separator())
+		for i := len(m.Lines) - m.footer; i < len(m.Lines); i++ {
+			out = append(out, m.Lines[i])
+		}
+	}
+
+	/////////////////////////////
+	// ruler
+	/////////////////////////////
 	if m.Ruler {
-		out = append(out, fmt.Sprintf("    start=(%d,%d,%d), pin=%d, len=%d, scroll=%d, key=0x%x",
-			start, end, m.Height, m.Pin, len(m.Lines), m.Offset, m.key))
+		out = append(out, fmt.Sprintf("    start=(%d,%d,%d), pin=(%d,%d) len=%d, scroll=%d, key=0x%x",
+			start, end, m.Height, m.header, m.footer, len(m.Lines), m.Offset, m.key))
 	}
 
 	return out

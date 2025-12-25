@@ -7,8 +7,9 @@ type Model struct {
 	// Lines は入力全体（1行=1要素）
 	Lines []string
 
-	// Pin は常に先頭に固定表示される行数
-	Pin int
+	// 常に先頭に固定表示される行数
+	header int
+	footer int
 
 	// Offset は本文部分の開始行インデックス
 	// 常に Offset >= Pin になるよう制御される
@@ -25,16 +26,45 @@ type Model struct {
 }
 
 // New は pager.Model を安全な初期値で生成する。
-func NewModel(lines []string, pin, h int) *Model {
+func NewModel(lines []string, height int) *Model {
 
 	// Offset は pin 行の直後から開始する
 	return &Model{
 		Lines:  lines,
-		Pin:    pin,
-		Height: h,
+		header: 1,
+		footer: 0,
+		Height: height,
 	}
 }
 
 func (m *Model) SetRuler(on bool) {
 	m.Ruler = on
+}
+
+func (m *Model) SetHeader(h int) {
+	if h < 0 {
+		h = 0
+	}
+	m.header = h
+}
+
+func (m *Model) SetFooter(f int) {
+	if f < 0 {
+		f = 0
+	}
+	m.footer = f
+}
+
+func (m *Model) bodyHeight() int {
+	space := m.Height - m.header - m.footer
+	if m.header > 0 { // separator
+		space--
+	}
+	if m.footer > 0 { // separator
+		space--
+	}
+	if space < 0 {
+		space = 0
+	}
+	return space
 }

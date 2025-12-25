@@ -12,7 +12,7 @@ import (
 	"github.com/hiwane/pinview/internal/term"
 )
 
-func _main(headerLines int, showRuler bool) error {
+func _main(header, footer int, showRuler bool) error {
 
 	var scanner *bufio.Scanner
 	// 引数なし → stdin
@@ -55,8 +55,10 @@ func _main(headerLines int, showRuler bool) error {
 	}
 	defer in.Close()
 
-	model := pager.NewModel(lines, headerLines, term.GetHeight(tty)-1)
+	model := pager.NewModel(lines, term.GetHeight(tty)-1)
 	model.SetRuler(showRuler)
+	model.SetHeader(header)
+	model.SetFooter(footer)
 	for {
 		term.ViewClearScreen(os.Stdout)
 
@@ -75,8 +77,9 @@ func _main(headerLines int, showRuler bool) error {
 }
 
 func main() {
-	headerLines := flag.Int("n", 1, "number of header lines to pin")
-	flag.IntVar(headerLines, "header", 1, "number of header lines to pin")
+	header := flag.Int("H", 1, "number of header lines to pin")
+	footer := flag.Int("F", 0, "number of footer lines to pin")
+
 	var showRuler bool
 	flag.BoolVar(&showRuler, "ruler", false, "show ruler")
 	flag.Parse()
@@ -94,7 +97,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err := _main(*headerLines, showRuler)
+	err := _main(*header, *footer, showRuler)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
