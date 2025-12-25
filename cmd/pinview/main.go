@@ -2,9 +2,12 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/hiwane/pinview/internal/draw"
 	"github.com/hiwane/pinview/internal/input"
@@ -44,7 +47,7 @@ func getLines() ([]string, error) {
 	return lines, nil
 }
 
-func _main(header, footer int, showRuler bool) error {
+func _main(header, footer int, showRuler bool, drawer draw.Drawer) error {
 
 	lines, err := getLines()
 	if err != nil {
@@ -75,26 +78,27 @@ func _main(header, footer int, showRuler bool) error {
 	model.SetHeader(header)
 	model.SetFooter(footer)
 	model.SetHeight(size.Height)
-	for {
-		term.ViewClearScreen(os.Stdout)
 
-		lines := model.View()
-		draw.Draw(lines)
+	pager := pager.New(model, in, drawer)
 
-		key, err := in.ReadRune()
-		if err != nil {
-			return err
-		}
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	defer stop()
 
-		if model.Update(key) {
-			return nil
-		}
+	err = pager.Run(ctx, tty)
+	if err != nil {
+		return err
 	}
+	return nil
 }
 
 func main() {
 	header := flag.Int("H", 1, "number of header lines to pin")
 	footer := flag.Int("F", 0, "number of footer lines to pin (default 0)")
+	debug := flag.Bool("debug", false, "enable debug mode")
 
 	var showRuler bool
 	flag.BoolVar(&showRuler, "ruler", false, "show ruler")
@@ -113,7 +117,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	err := _main(*header, *footer, showRuler)
+	var drawer draw.Drawer
+	if *debug {
+		drawer = draw.NewDebugDrawer()
+	} else {
+		drawer = draw.NewTerminalDrawer()
+	}
+
+	err := _main(*header, *footer, showRuler, drawer)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

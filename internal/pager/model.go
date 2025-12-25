@@ -1,8 +1,5 @@
 package pager
 
-import (
-)
-
 // Model は pager の状態を表す。
 // この構造体は端末・stdin・stdout を一切知らない。
 // 「何行を表示すべきか」を決めるための純粋な状態のみを持つ。
@@ -25,9 +22,9 @@ type Model struct {
 
 	Ruler bool
 
-	key rune
+	key        rune
+	sizeUpdate bool
 }
-
 
 // New は pager.Model を安全な初期値で生成する。
 func NewModel(lines []string) *Model {
@@ -79,4 +76,12 @@ func (m *Model) SetHeight(h int) {
 		h = 0
 	}
 	m.Height = h
+}
+
+func (m *Model) SetSizeUpdate(f bool) {
+	m.sizeUpdate = f
+}
+
+func (m *Model) SetKey(key rune) {
+	m.key = key
 }

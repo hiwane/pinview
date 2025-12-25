@@ -28,3 +28,20 @@ func (i *Input) ReadRune() (rune, error) {
 func (i *Input) Close() error {
 	return i.tty.Close()
 }
+
+func (i *Input) Runes() <-chan rune {
+	ch := make(chan rune)
+
+	go func() {
+		defer close(ch)
+		for {
+			r, err := i.ReadRune()
+			if err != nil {
+				return
+			}
+			ch <- r
+		}
+	}()
+
+	return ch
+}

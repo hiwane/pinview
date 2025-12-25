@@ -16,7 +16,7 @@ const (
 func (m *Model) Update(key rune) bool {
 
 	maxOffset := m.maxScroll()
-	m.key = key
+	m.SetKey(key)
 
 	switch key {
 	case 'q', 3: // 'q' または Ctrl-C

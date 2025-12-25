@@ -59,8 +59,8 @@ func (m *Model) View() []string {
 	// ruler
 	/////////////////////////////
 	if m.Ruler {
-		out = append(out, fmt.Sprintf("    start=(%d,%d,%d), pin=(%d,%d) len=%d, scroll=%d, key=0x%x",
-			start, end, m.Height, m.header, m.footer, len(m.Lines), m.Offset, m.key))
+		out = append(out, fmt.Sprintf("    start=(%d,%d,%d), pin=(%d,%d) len=%d, scroll=%d, key=0x%x, sig=%v",
+			start, end, m.Height, m.header, m.footer, len(m.Lines), m.Offset, m.key, m.sizeUpdate))
 	}
 
 	return out
