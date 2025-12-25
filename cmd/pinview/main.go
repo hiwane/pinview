@@ -65,7 +65,7 @@ func _main(header, footer int, showRuler bool) error {
 		lines := model.View()
 		draw.Draw(lines)
 
-		key, err := in.ReadKey()
+		key, err := in.ReadRune()
 		if err != nil {
 			return err
 		}

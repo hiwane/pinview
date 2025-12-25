@@ -22,7 +22,7 @@ type Model struct {
 
 	Ruler bool
 
-	key byte
+	key rune
 }
 
 // New は pager.Model を安全な初期値で生成する。

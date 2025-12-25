@@ -13,7 +13,7 @@ const (
 
 // Update は Action に基づいて Model の状態を更新する。
 // 画面描画や入出力は行わない。
-func (m *Model) Update(key byte) bool {
+func (m *Model) Update(key rune) bool {
 
 	maxOffset := m.maxScroll()
 	m.key = key
