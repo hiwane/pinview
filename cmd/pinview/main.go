@@ -12,8 +12,7 @@ import (
 	"github.com/hiwane/pinview/internal/term"
 )
 
-func _main(header, footer int, showRuler bool) error {
-
+func getLines() ([]string, error) {
 	var scanner *bufio.Scanner
 	// 引数なし → stdin
 	if flag.NArg() == 0 {
@@ -23,7 +22,7 @@ func _main(header, footer int, showRuler bool) error {
 		f, err := os.Open(flag.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "open file error:", flag.Arg(0))
-			return err
+			return nil, err
 		}
 		defer f.Close()
 		scanner = bufio.NewScanner(f)
@@ -39,6 +38,17 @@ func _main(header, footer int, showRuler bool) error {
 
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+		return nil, err
+	}
+
+	return lines, nil
+}
+
+func _main(header, footer int, showRuler bool) error {
+
+	lines, err := getLines()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "getLines()", err)
 		return err
 	}
 
@@ -55,7 +65,12 @@ func _main(header, footer int, showRuler bool) error {
 	}
 	defer in.Close()
 
-	model := pager.NewModel(lines, term.GetHeight(tty)-1)
+	h, err := term.GetHeight(tty)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "terminal init error:", err)
+		return err
+	}
+	model := pager.NewModel(lines, h-1)
 	model.SetRuler(showRuler)
 	model.SetHeader(header)
 	model.SetFooter(footer)
@@ -78,7 +93,7 @@ func _main(header, footer int, showRuler bool) error {
 
 func main() {
 	header := flag.Int("H", 1, "number of header lines to pin")
-	footer := flag.Int("F", 0, "number of footer lines to pin")
+	footer := flag.Int("F", 0, "number of footer lines to pin (default 0)")
 
 	var showRuler bool
 	flag.BoolVar(&showRuler, "ruler", false, "show ruler")
