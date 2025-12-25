@@ -16,6 +16,7 @@ const (
 func (m *Model) Update(key byte) bool {
 
 	maxOffset := m.maxScroll()
+	m.key = key
 
 	switch key {
 	case 'q', 3: // 'q' または Ctrl-C
@@ -28,8 +29,10 @@ func (m *Model) Update(key byte) bool {
 		m.Offset = 0
 	case 'G':
 		m.Offset = maxOffset
-	case ' ':
+	case ' ', 0x4:
 		m.Offset += m.Height - m.Pin - 1
+	case 0x15:
+		m.Offset -= m.Height - m.Pin - 1
 	}
 
 	if m.Offset < 0 {

@@ -2,7 +2,6 @@ package pager
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -43,8 +42,8 @@ func (m *Model) View() []string {
 	}
 
 	if m.Ruler {
-		out = append(out, fmt.Sprintf("start=(%d,%d,%d), pin=%d, len=%d, scroll=%d, LINE=%s",
-			start, end, m.Height, m.Pin, len(m.Lines), m.Offset, os.Getenv("LINES")))
+		out = append(out, fmt.Sprintf("    start=(%d,%d,%d), pin=%d, len=%d, scroll=%d, key=0x%x",
+			start, end, m.Height, m.Pin, len(m.Lines), m.Offset, m.key))
 	}
 
 	return out

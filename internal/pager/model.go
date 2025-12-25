@@ -20,6 +20,8 @@ type Model struct {
 	Width int
 
 	Ruler bool
+
+	key byte
 }
 
 // New は pager.Model を安全な初期値で生成する。
