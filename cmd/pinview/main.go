@@ -65,15 +65,16 @@ func _main(header, footer int, showRuler bool) error {
 	}
 	defer in.Close()
 
-	h, err := term.GetHeight(tty)
+	size, err := term.GetSize(tty)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "terminal init error:", err)
 		return err
 	}
-	model := pager.NewModel(lines, h-1)
+	model := pager.NewModel(lines)
 	model.SetRuler(showRuler)
 	model.SetHeader(header)
 	model.SetFooter(footer)
+	model.SetHeight(size.Height)
 	for {
 		term.ViewClearScreen(os.Stdout)
 

@@ -1,5 +1,8 @@
 package pager
 
+import (
+)
+
 // Model は pager の状態を表す。
 // この構造体は端末・stdin・stdout を一切知らない。
 // 「何行を表示すべきか」を決めるための純粋な状態のみを持つ。
@@ -25,15 +28,16 @@ type Model struct {
 	key rune
 }
 
+
 // New は pager.Model を安全な初期値で生成する。
-func NewModel(lines []string, height int) *Model {
+func NewModel(lines []string) *Model {
 
 	// Offset は pin 行の直後から開始する
 	return &Model{
 		Lines:  lines,
 		header: 1,
 		footer: 0,
-		Height: height,
+		Height: 0,
 	}
 }
 
@@ -67,4 +71,12 @@ func (m *Model) bodyHeight() int {
 		space = 0
 	}
 	return space
+}
+
+func (m *Model) SetHeight(h int) {
+	h -= 1
+	if h < 0 {
+		h = 0
+	}
+	m.Height = h
 }

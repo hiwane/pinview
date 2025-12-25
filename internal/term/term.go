@@ -7,6 +7,12 @@ import (
 	"golang.org/x/term"
 )
 
+type Size struct {
+	Width  int
+	Height int
+}
+
+
 // IsInteractive は stdout が端末かどうかを返す。
 // パイプやリダイレクト時は false になる。
 func IsInteractive() bool {
@@ -19,9 +25,9 @@ func IsTTY(f *os.File) bool {
 
 // GetHeight は現在の端末の高さを取得する。
 // 取得に失敗した場合でも必ず正の値を返す。
-func GetHeight(tty *os.File) (int, error) {
-	_, h, err := term.GetSize(int(tty.Fd()))
-	return h, err
+func GetSize(tty *os.File) (Size, error) {
+	w, h, err := term.GetSize(int(tty.Fd()))
+	return Size{Width: w, Height: h}, err
 }
 
 func ViewClearScreen(tty *os.File) {
