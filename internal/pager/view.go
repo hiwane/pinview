@@ -81,8 +81,8 @@ func (p *Pager) viewPager() []string {
 	if m.Ruler {
 		end -= 1
 	}
-	if end > len(m.Lines) {
-		end = len(m.Lines)
+	if end > len(m.Lines)-m.footer {
+		end = len(m.Lines) - m.footer
 	}
 
 	for i := start; i < end; i++ {
