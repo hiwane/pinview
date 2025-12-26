@@ -4,6 +4,13 @@ import (
 	"github.com/hiwane/pinview/internal/input"
 )
 
+type ModeType int
+
+const (
+	ModePager ModeType = iota
+	ModeHelp
+)
+
 // Model は pager の状態を表す。
 // この構造体は端末・stdin・stdout を一切知らない。
 // 「何行を表示すべきか」を決めるための純粋な状態のみを持つ。
@@ -29,6 +36,8 @@ type Model struct {
 
 	key        input.Key
 	sizeUpdate bool
+
+	Mode ModeType
 }
 
 // New は pager.Model を安全な初期値で生成する。
@@ -40,6 +49,7 @@ func NewModel(lines []string) *Model {
 		header: 1,
 		footer: 0,
 		Height: 0,
+		Mode:   ModePager,
 	}
 }
 

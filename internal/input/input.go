@@ -26,6 +26,7 @@ const (
 	ModeNormal InputMode = iota
 	ModeCount
 	ModeCommand
+	ModeHelp
 )
 
 func New(f *os.File) (*Input, error) {
@@ -190,6 +191,10 @@ func actionFromSingleKey(k Key, cnt int) *action.Action {
 			return &action.Action{Type: action.ActIncreaseFooter, Count: cnt}
 		case 'b':
 			return &action.Action{Type: action.ActDecreaseFooter, Count: cnt}
+		case 'r':
+			return &action.Action{Type: action.ActToggleRuler, Count: cnt}
+		case '?':
+			return &action.Action{Type: action.ActHelp, Count: cnt}
 		case '+':
 			return &action.Action{Type: action.ActIncreaseHeight, Count: cnt}
 		case '-':

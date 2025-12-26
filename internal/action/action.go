@@ -6,6 +6,7 @@ type ActionType int
 
 const (
 	ActNone ActionType = iota
+	ActHelp
 	ActDown
 	ActUp
 	ActQuit

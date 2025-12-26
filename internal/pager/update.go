@@ -7,12 +7,18 @@ import (
 // Update は action.Action に基づいて Model の状態を更新する。
 // 画面描画や入出力は行わない。
 func (m *Model) Update(a *action.Action) bool {
+	if m.Mode == ModeHelp {
+		m.Mode = ModePager
+		return false
+	}
 
 	maxOffset := m.maxScroll()
 
 	switch a.Type {
 	case action.ActQuit:
 		return true
+	case action.ActHelp:
+		m.Mode = ModeHelp
 	case action.ActDown:
 		m.OffsetY += a.Count
 	case action.ActUp:
