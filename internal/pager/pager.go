@@ -25,15 +25,24 @@ func New(model *Model, input *input.Input, draw draw.Drawer) *Pager {
 
 func (p *Pager) Run(ctx context.Context, tty *os.File) error {
 	resizeCh := term.WatchResize(ctx, tty)
+	sigintCh := term.WatchInterrupt()
 	inputCh := p.input.Runes()
+
+	if true {
+		p.draw.Render(p.model.View())
+	}
 
 	need_draw := true
 	for {
 		select {
 		case size := <-resizeCh:
 			p.model.SetHeight(size.Height)
+			p.model.SetWidth(size.Width)
+			p.model.SetHeight(size.Height)
 			p.model.SetSizeUpdate(true)
 			need_draw = true
+		case <-sigintCh:
+			return nil
 		case key := <-inputCh:
 			if p.model.Update(key) {
 				return nil

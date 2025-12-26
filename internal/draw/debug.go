@@ -12,5 +12,9 @@ func NewDebugDrawer() *DebugDrawer {
 }
 
 func (d *DebugDrawer) Render(lines []string) {
-	fmt.Printf("%s\n", lines[len(lines)-1])
+	if len(lines) > 0 {
+		fmt.Printf("%s\n", lines[len(lines)-1])
+	} else {
+		fmt.Printf("empty line\n")
+	}
 }

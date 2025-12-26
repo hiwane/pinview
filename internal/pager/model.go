@@ -13,7 +13,8 @@ type Model struct {
 
 	// Offset は本文部分の開始行インデックス
 	// 常に Offset >= Pin になるよう制御される
-	Offset int
+	OffsetX int
+	OffsetY int
 
 	// Height は画面の高さ（表示可能な行数）
 	Height int
@@ -68,6 +69,13 @@ func (m *Model) bodyHeight() int {
 		space = 0
 	}
 	return space
+}
+
+func (m *Model) SetWidth(w int) {
+	if w < 0 {
+		w = 0
+	}
+	m.Width = w
 }
 
 func (m *Model) SetHeight(h int) {

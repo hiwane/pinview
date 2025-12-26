@@ -78,6 +78,7 @@ func _main(header, footer int, showRuler bool, drawer draw.Drawer) error {
 	model.SetHeader(header)
 	model.SetFooter(footer)
 	model.SetHeight(size.Height)
+	model.SetWidth(size.Width)
 
 	pager := pager.New(model, in, drawer)
 

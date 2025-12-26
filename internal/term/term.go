@@ -10,6 +10,8 @@ import (
 	"golang.org/x/term"
 )
 
+var EnableResize = true
+
 type Size struct {
 	Width  int
 	Height int
@@ -34,6 +36,9 @@ func GetSize(tty *os.File) (Size, error) {
 
 func WatchResize(ctx context.Context, tty *os.File) <-chan Size {
 	ch := make(chan Size)
+	if !EnableResize {
+		return ch
+	}
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGWINCH)
@@ -68,6 +73,20 @@ func WatchResize(ctx context.Context, tty *os.File) <-chan Size {
 				}
 			}
 		}
+	}()
+
+	return ch
+}
+
+func WatchInterrupt() <-chan struct{} {
+	ch := make(chan struct{}, 1)
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt)
+
+	go func() {
+		<-sigCh
+		ch <- struct{}{}
 	}()
 
 	return ch
