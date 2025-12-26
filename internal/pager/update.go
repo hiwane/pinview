@@ -1,73 +1,56 @@
 package pager
 
 import (
-	"fmt"
-	"github.com/hiwane/pinview/internal/input"
+	"github.com/hiwane/pinview/internal/action"
 )
 
-// Action は pager に対する操作を表す。
-// 入力方法（キー・マウス等）とは切り離して定義する。
-type Action int
-
-const (
-	ActNone Action = iota
-	ActDown
-	ActUp
-	ActQuit
-)
-
-// Update は Action に基づいて Model の状態を更新する。
+// Update は action.Action に基づいて Model の状態を更新する。
 // 画面描画や入出力は行わない。
-func (m *Model) Update(keyEvent input.Key) bool {
+func (m *Model) Update(a *action.Action) bool {
 
-	key := keyEvent.Rune
 	maxOffset := m.maxScroll()
-	m.SetKey(keyEvent)
-	fmt.Printf("Update key: %s, OffsetY: %d/%d\n", keyEvent, m.OffsetY, maxOffset)
 
-	if keyEvent.Ctrl {
-		// CTRL-
-		switch key {
-		case 'c':
-			return true
-		case 'd':
-			m.OffsetY += m.bodyHeight()
-		case 'u':
-			m.OffsetY -= m.bodyHeight()
-		}
-	} else {
-		switch key {
-		case 'q': // 'q' または Ctrl-C
-			return true
-		case 'h':
-			m.OffsetX--
-		case 'j':
-			m.OffsetY++
-		case 'k':
-			m.OffsetY--
-		case 'l':
-			m.OffsetX++
-		case 't':
-			m.SetHeader(m.header - 1)
-		case 'T': // top
-			m.SetHeader(m.header + 1)
-		case 'b':
-			m.SetFooter(m.footer - 1)
-		case 'B': // bottom
-			m.SetFooter(m.footer + 1)
-		case '+':
-			m.Height++
-		case '-':
-			m.Height--
-		case 'g':
+	switch a.Type {
+	case action.ActQuit:
+		return true
+	case action.ActDown:
+		m.OffsetY += a.Count
+	case action.ActUp:
+		m.OffsetY -= a.Count
+	case action.ActPageDown:
+		m.OffsetY += m.bodyHeight() * a.Count
+	case action.ActPageUp:
+		m.OffsetY -= m.bodyHeight() * a.Count
+	case action.ActTop:
+		if a.Count > 1 {
+			m.OffsetY = a.Count - 1
+		} else {
 			m.OffsetY = 0
-		case 'G':
-			m.OffsetY = maxOffset
-		case ' ':
-			m.OffsetY += m.bodyHeight()
-		case 'r':
-			m.Ruler = !m.Ruler
 		}
+	case action.ActBottom:
+		if a.Count > 1 {
+			m.OffsetY = maxOffset - (a.Count - 1)
+		} else {
+			m.OffsetY = maxOffset
+		}
+	case action.ActToggleRuler:
+		m.Ruler = !m.Ruler
+	case action.ActIncreaseHeader:
+		m.SetHeader(m.header + a.Count)
+	case action.ActDecreaseHeader:
+		m.SetHeader(m.header - a.Count)
+	case action.ActIncreaseFooter:
+		m.SetFooter(m.footer + a.Count)
+	case action.ActDecreaseFooter:
+		m.SetFooter(m.footer - a.Count)
+	case action.ActIncreaseHeight:
+		m.Height += a.Count
+	case action.ActDecreaseHeight:
+		m.Height -= a.Count
+	case action.ActScrollLeft:
+		m.OffsetX -= a.Count
+	case action.ActScrollRight:
+		m.OffsetX += a.Count
 	}
 
 	if m.OffsetY < 0 {

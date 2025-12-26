@@ -29,7 +29,7 @@ func (p *Pager) Run(ctx context.Context, tty *os.File) error {
 	inputCh := p.input.Runes()
 
 	if true {
-		p.draw.Render(p.model.View())
+		p.draw.Render(p.View())
 	}
 
 	need_draw := true
@@ -44,14 +44,17 @@ func (p *Pager) Run(ctx context.Context, tty *os.File) error {
 		case <-sigintCh:
 			return nil
 		case key := <-inputCh:
-			if p.model.Update(key) {
-				return nil
+			p.model.SetKey(key)
+			if a := p.input.HandleKey(key); a != nil {
+				if p.model.Update(a) {
+					return nil
+				}
+				need_draw = true
 			}
-			need_draw = true
 		}
 
 		if need_draw {
-			lines := p.model.View()
+			lines := p.View()
 			p.draw.Render(lines)
 			need_draw = false
 			p.model.SetSizeUpdate(false)

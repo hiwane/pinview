@@ -46,7 +46,8 @@ func sliceLineByWidth(line string, startCol, width int) string {
 // VisibleLines は現在の Model 状態に基づいて
 // 「画面に表示すべき行」を返す。
 // 戻り値の各要素は改行を含まない論理行。
-func (m *Model) View() []string {
+func (p *Pager) View() []string {
+	m := p.model
 	if len(m.Lines) == 0 || m.Height <= 0 {
 		return nil
 	}
@@ -93,9 +94,19 @@ func (m *Model) View() []string {
 	// ruler
 	/////////////////////////////
 	if m.Ruler {
-		out = append(out, fmt.Sprintf("    start=(%d,%d,%d), pin=(%d,%d) len=%d, offfset=(%d,%d), key=%s, sig=%v",
-			start, end, m.Height, m.header, m.footer, len(m.Lines), m.OffsetX, m.OffsetY, m.key, m.sizeUpdate))
+		out = append(out, p.viewCommandLine(start, end))
+
 	}
 
 	return out
+}
+
+func (p *Pager) viewCommandLine(start, end int) string {
+	return fmt.Sprintf("   (%2d,%2d/%d)   move hjkl | page ud | jump gG | pin TtBb | quit q",
+		p.model.OffsetX, p.model.OffsetY, len(p.model.Lines),
+	)
+
+	// 	fmt.Sprintf("    start=(%d,%d,%d), pin=(%d,%d) len=%d, offfset=(%d,%d), key=%s, sig=%v",
+	// 		start, end, m.Height, m.header, m.footer, len(m.Lines), m.OffsetX, m.OffsetY, m.key, m.sizeUpdate))
+	// return ""
 }
