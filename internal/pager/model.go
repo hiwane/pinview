@@ -1,5 +1,9 @@
 package pager
 
+import (
+	"github.com/hiwane/pinview/internal/input"
+)
+
 // Model は pager の状態を表す。
 // この構造体は端末・stdin・stdout を一切知らない。
 // 「何行を表示すべきか」を決めるための純粋な状態のみを持つ。
@@ -23,7 +27,7 @@ type Model struct {
 
 	Ruler bool
 
-	key        rune
+	key        input.Key
 	sizeUpdate bool
 }
 
@@ -90,6 +94,6 @@ func (m *Model) SetSizeUpdate(f bool) {
 	m.sizeUpdate = f
 }
 
-func (m *Model) SetKey(key rune) {
+func (m *Model) SetKey(key input.Key) {
 	m.key = key
 }

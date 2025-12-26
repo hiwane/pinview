@@ -55,7 +55,7 @@ func (p *Pager) Run(ctx context.Context, tty *os.File) error {
 			p.draw.Render(lines)
 			need_draw = false
 			p.model.SetSizeUpdate(false)
-			p.model.SetKey(0)
+			p.model.SetKey(input.Key{}) // clear key
 		}
 	}
 }
